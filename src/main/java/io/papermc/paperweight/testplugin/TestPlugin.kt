@@ -1,75 +1,63 @@
-package io.papermc.paperweight.testplugin;
+@file:Suppress("UnstableApiUsage")
 
-import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
-import com.destroystokyo.paper.event.brigadier.CommandRegisteredEvent;
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import java.util.Collection;
-import java.util.function.Consumer;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+package io.papermc.paperweight.testplugin
 
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
-import static net.minecraft.commands.Commands.argument;
-import static net.minecraft.commands.Commands.literal;
-import static net.minecraft.commands.arguments.EntityArgument.players;
+import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
+import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.registerSuspendingEvents
+import com.mojang.brigadier.tree.LiteralCommandNode
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import io.papermc.paperweight.testplugin.command.arguments.command
+import io.papermc.paperweight.testplugin.command.arguments.greedyString
+import io.papermc.paperweight.testplugin.command.arguments.literal
+import io.papermc.paperweight.testplugin.command.arguments.player
+import io.papermc.paperweight.testplugin.command.executors.executes
+import io.papermc.paperweight.testplugin.command.executors.get
+import io.papermc.paperweight.testplugin.command.executors.getPlayer
+import io.papermc.paperweight.testplugin.command.requirements.requiresPlayer
+import io.papermc.paperweight.testplugin.command.suggestions.SuggestionProviders
+import io.papermc.paperweight.testplugin.config.CustomChunkGenerator
+import kotlinx.coroutines.delay
+import net.kyori.adventure.key.Key
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.entity.Player
+import org.bukkit.event.Listener
+import org.bukkit.generator.ChunkGenerator
+import org.bukkit.plugin.java.JavaPlugin
+import org.checkerframework.checker.nullness.qual.NonNull
+import org.checkerframework.framework.qual.DefaultQualifier
 
-@DefaultQualifier(NonNull.class)
-public final class TestPlugin extends JavaPlugin implements Listener {
-  @Override
-  public void onEnable() {
-    this.getServer().getPluginManager().registerEvents(this, this);
 
-    this.registerPluginBrigadierCommand(
-      "paperweight",
-      literal -> literal.requires(stack -> stack.getBukkitSender().hasPermission("paperweight"))
-        .then(literal("hello")
-          .executes(ctx -> {
-            ctx.getSource().getBukkitSender().sendMessage(text("Hello!", BLUE));
-            return Command.SINGLE_SUCCESS;
-          }))
-        .then(argument("players", players())
-          .executes(ctx -> {
-            final Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "players");
-            for (final ServerPlayer player : players) {
-              player.sendSystemMessage(
-                Component.literal("Hello from Paperweight test plugin!")
-                  .withStyle(ChatFormatting.ITALIC, ChatFormatting.GREEN)
-                  .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/paperweight @a")))
-              );
-            }
-            return players.size();
-          }))
-    );
-  }
+@DefaultQualifier(NonNull::class)
+class TestPlugin : JavaPlugin(), Listener {
 
-  private PluginBrigadierCommand registerPluginBrigadierCommand(final String label, final Consumer<LiteralArgumentBuilder<CommandSourceStack>> command) {
-    final PluginBrigadierCommand pluginBrigadierCommand = new PluginBrigadierCommand(this, label, command);
-    this.getServer().getCommandMap().register(this.getName(), pluginBrigadierCommand);
-    ((CraftServer) this.getServer()).syncCommands();
-    return pluginBrigadierCommand;
-  }
-
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  @EventHandler
-  public void onCommandRegistered(final CommandRegisteredEvent<BukkitBrigadierCommandSource> event) {
-    if (!(event.getCommand() instanceof PluginBrigadierCommand pluginBrigadierCommand)) {
-      return;
+    override fun onEnable() {
+      server.pluginManager.registerSuspendingEvents(this, this)
+      command(this)
     }
-    final LiteralArgumentBuilder<CommandSourceStack> node = literal(event.getCommandLabel());
-    pluginBrigadierCommand.command().accept(node);
-    event.setLiteral((LiteralCommandNode) node.build());
+
+  override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {
+    return CustomChunkGenerator()
   }
 }
+
+fun LiteralCommandNode<CommandSourceStack>.register(plugin: JavaPlugin){
+  plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+    val commands: Commands = event.registrar()
+    commands.register(
+      this,
+      "some bukkit help description string",
+      listOf("an-alias")
+    )
+  }
+}
+
+
+
+
