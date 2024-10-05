@@ -44,6 +44,12 @@ dependencies {
   implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:2.19.0")
   implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:2.19.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+  implementation(platform("com.intellectualsites.bom:bom-newest:1.49"))
+  compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
+  compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") {
+    isTransitive = false // 종속성을 직접 추가하지 않음
+  }
+  implementation ("com.google.code.gson:gson:2.11.0")
 
 }
 
@@ -69,7 +75,6 @@ tasks {
   shadowJar {
     // helper function to relocate a package into our package
     fun reloc(pkg: String) = relocate(pkg, "io.papermc.paperweight.testplugin.dependency.$pkg")
-
     // relocate cloud and it's transitive dependencies
     reloc("io.leangen.geantyref")
   }
@@ -85,11 +90,15 @@ bukkitPluginYaml {
   libraries = listOf(
     "com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:2.19.0",
     "com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:2.19.0",
-    "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1",
+    "com.google.code.gson:gson:2.11.0"
   )
 }
 repositories {
   mavenCentral()
+  maven(url = "https://jitpack.io")
+  maven { url = uri("https://maven.enginehub.org/repo/") }
+
 }
 kotlin {
   jvmToolchain(21)

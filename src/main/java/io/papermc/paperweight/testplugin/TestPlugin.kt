@@ -35,10 +35,10 @@ import org.checkerframework.framework.qual.DefaultQualifier
 
 
 @DefaultQualifier(NonNull::class)
-class TestPlugin : JavaPlugin(), Listener {
+class TestPlugin : JavaPlugin() {
 
     override fun onEnable() {
-      server.pluginManager.registerSuspendingEvents(this, this)
+      server.pluginManager.registerSuspendingEvents(TundraListener(this), this)
       command(this)
     }
 

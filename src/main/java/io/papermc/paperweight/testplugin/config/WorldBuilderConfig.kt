@@ -89,7 +89,9 @@ class CustomChunkGenerator : ChunkGenerator() {
   override fun getDefaultPopulators(world: World): MutableList<BlockPopulator> {
     return listOf(TreeTrunkPopulator() as BlockPopulator,OrePopulator() as BlockPopulator).toMutableList()
   }
-
+  override fun shouldGenerateMobs(): Boolean {
+    return true // 몬스터 생성 허용
+  }
 }
 
 

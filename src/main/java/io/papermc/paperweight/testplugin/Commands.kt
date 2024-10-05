@@ -1,6 +1,13 @@
 package io.papermc.paperweight.testplugin
 
-import io.papermc.paper.command.brigadier.Commands.literal
+import com.sk89q.worldedit.EditSession
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
+import com.sk89q.worldedit.function.operation.Operations
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.session.ClipboardHolder
 import io.papermc.paperweight.testplugin.command.arguments.command
 import io.papermc.paperweight.testplugin.command.arguments.greedyString
 import io.papermc.paperweight.testplugin.command.arguments.literal
@@ -15,6 +22,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
+import java.io.FileInputStream
+
 
 fun command(plugin: JavaPlugin){
   command("example") {
