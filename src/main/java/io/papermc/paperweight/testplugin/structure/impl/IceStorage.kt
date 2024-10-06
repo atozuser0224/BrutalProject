@@ -18,9 +18,9 @@ object IceStorage : CustomStructure{
     WeightItem(Material.COAL.item,15,7..21)
   )
 
-  override fun getWeight(): Int = 1000
+  override fun getWeight(): Int = 401
 
   override fun getOffset(): Vector3i = Vector3i(0,-15,0)
-  override fun getDensity(): Pair<Int, Int> = 2 to 5
+  override fun getDensity(): Pair<Int, Int> = 3 to 10
 }
 

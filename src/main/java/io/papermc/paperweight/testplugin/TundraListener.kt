@@ -2,7 +2,7 @@ package io.papermc.paperweight.testplugin
 
 import io.papermc.paperweight.testplugin.pathfinder.BreakSpecificBlockGoal
 import io.papermc.paperweight.testplugin.pathfinder.EntityAttackPosPathFinder
-import io.papermc.paperweight.testplugin.structure.CopyStructure
+import io.papermc.paperweight.testplugin.structure.StructureManager
 import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent
 import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.MobCategory
@@ -31,18 +31,8 @@ class TundraListener(val plugin: Plugin) : Listener {
   }
   @EventHandler
   fun onChunkLoad(e : ChunkLoadEvent){
-    val r = Random.nextInt(0,1000)
-    if (r > 990 && e.isNewChunk){
-      Bukkit.getLogger().info("spawn")
-      val file = File(plugin.dataFolder, "/sche/frontStrorage.schem")
-      val file2 = File(plugin.dataFolder, "/sche/backStrorage.schem")
-      val centerX = (e.chunk.x * 16 + 8)  // 청크 시작 X좌표 + 8
-      val centerZ = (e.chunk.z * 16 + 8)  // 청크 시작 Z좌표 + 8
-
-      // 지면 레벨을 기준으로 Y 좌표 설정 (Y = 64, 또는 다른 적절한 값 사용 가능)
-      val groundY = e.world.getHighestBlockYAt(centerX, centerZ).toDouble()
-      CopyStructure(file2, Location(e.world,centerX.toDouble(),groundY-15,centerZ.toDouble()))
-      CopyStructure(file, Location(e.world,centerX.toDouble(),groundY-15,centerZ.toDouble()))
+    if (e.isNewChunk){
+      StructureManager.addChunk(plugin,e.chunk)
     }
   }
 }

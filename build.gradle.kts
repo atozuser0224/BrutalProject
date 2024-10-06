@@ -5,6 +5,7 @@ plugins {
   id("io.papermc.paperweight.userdev") version "1.7.3"
   id("xyz.jpenilla.run-paper") version "2.3.1" // Adds runServer and runMojangMappedServer tasks for testing
   id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.2.0" // Generates plugin.yml based on the Gradle config
+  kotlin("plugin.serialization") version "1.9.23"
 
   // Shades and relocates dependencies into our plugin jar. See https://imperceptiblethoughts.com/shadow/introduction/
   id("com.gradleup.shadow") version "8.3.2"
@@ -49,7 +50,9 @@ dependencies {
   compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") {
     isTransitive = false // 종속성을 직접 추가하지 않음
   }
-  implementation ("com.google.code.gson:gson:2.11.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+// https://mvnrepository.com/artifact/net.kyori/adventure-nbt
+  implementation("net.benwoodworth.knbt:knbt:0.11.5")
 
 }
 
@@ -91,7 +94,8 @@ bukkitPluginYaml {
     "com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:2.19.0",
     "com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:2.19.0",
     "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1",
-    "com.google.code.gson:gson:2.11.0"
+    "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1",
+    "net.benwoodworth.knbt:knbt:0.11.5"
   )
 }
 repositories {
